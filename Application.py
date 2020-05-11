@@ -110,28 +110,20 @@ class Application():
         self.p_t_value.setMaximum(999999)
         self.layout.addRow(self.p_t_label, self.p_t_value)
 
-        self.p_nq_label = QLabel('n - количество несчастных случаев')
-        self.p_nq_value = QSpinBox()
-        self.p_nq_value.setMaximum(999999)
-        self.layout.addRow(self.p_nq_label, self.p_nq_value)
+        self.p_i_label = QLabel('i - количество человек')
+        self.p_i_value = QSpinBox()
+        self.p_i_value.setMaximum(999999)
+        self.layout.addRow(self.p_i_label, self.p_i_value)
 
-        self.p_pn_button = QPushButton('Рассчитать P(n)')
-        self.p_pn_button.clicked.connect(self.calculate_pn)
-        self.layout.addRow(self.p_pn_button)
+        self.p_pi_button = QPushButton('Рассчитать Pi(0)')
+        self.p_pi_button.clicked.connect(self.calculate_pi)
+        self.layout.addRow(self.p_pi_button)
 
-        self.p_pn_label = QLabel('P(n) - Вероятность n-го количества несчастных случаев')
-        self.p_pn_value = QEdit()
-        self.layout.addRow(self.p_pn_label, self.p_pn_value)
+        self.p_pi_label = QLabel('Pi(0) - Вероятность безопасной работы для i-го количества человек')
+        self.p_pi_value = QEdit()
+        self.layout.addRow(self.p_pi_label, self.p_pi_value)
 
         self.layout.addRow(QHLine())
-
-        self.p_p0_button = QPushButton('Рассчитать P(0)')
-        self.p_p0_button.clicked.connect(self.calculate_p0)
-        self.layout.addRow(self.p_p0_button)
-
-        self.p_p0_label = QLabel('P(0) - Вероятность безопасной работы для одного человека в течение года')
-        self.p_p0_value = QEdit()
-        self.layout.addRow(self.p_p0_label, self.p_p0_value)
 
         self.p_rt_button = QPushButton('Рассчитать Rтр')
         self.p_rt_button.clicked.connect(self.calculate_rt)
@@ -140,6 +132,16 @@ class Application():
         self.p_rt_label = QLabel('Rтр - риск травмирования')
         self.p_rt_value = QEdit()
         self.layout.addRow(self.p_rt_label, self.p_rt_value)
+
+        self.layout.addRow(QHLine())
+
+        self.p_pn_button = QPushButton('Рассчитать P(n)')
+        self.p_pn_button.clicked.connect(self.calculate_pn)
+        self.layout.addRow(self.p_pn_button)
+
+        self.p_pn_label = QLabel('P(n) - Вероятность n-го количества несчастных случаев')
+        self.p_pn_value = QEdit()
+        self.layout.addRow(self.p_pn_label, self.p_pn_value)
 
         self.layout.addRow(QHLine())
 
@@ -189,7 +191,7 @@ class Application():
         self.p_ns_value.setValue(5)
         self.p_sd_value.setValue(20)
         self.p_ns_value.setValue(2)
-        self.p_nq_value.setValue(5)
+        self.p_i_value.setValue(5)
         self.p_t_value.setValue(1)
         self.p_oz_value.setValue(3)
         self.p_pz_value.setValue(4)
@@ -234,29 +236,39 @@ class Application():
 
         self.p_kob_value.setText(str(kob))
 
-    def calculate_pn(self):
-        kf = float(self.p_kf_value.toPlainText())
-        n = self.p_n_value.value()
-        nq = self.p_nq_value.value()
+    def calculate_pi(self):
+        kob = float(self.p_kob_value.toPlainText())
+        ns = self.p_ns_value.value()
+        i = self.p_i_value.value()
         t = self.p_t_value.value()
+        kt = float(self.p_kt_value.toPlainText())
+        ksm = float(self.p_ksm_value.toPlainText())
+        n = self.p_n_value.value()
+        kf = float(self.p_kf_value.toPlainText())
 
-        pn = pow(kf / 1000 * n * t, nq) / nq * pow(math.e, (-1 * kf / 1000 * n * t))
+        pi = pow(math.e, (-1 * kob * ns * ns * i * t) / ( (kt * ns + 6 * ksm * n) * kf * n ) )
+
+        self.p_pi_value.setText(str(pi))
+
+    def calculate_pn(self):
+        kob = float(self.p_kob_value.toPlainText())
+        ns = self.p_ns_value.value()
+        i = self.p_i_value.value()
+        t = self.p_t_value.value()
+        kt = float(self.p_kt_value.toPlainText())
+        ksm = float(self.p_ksm_value.toPlainText())
+        n = self.p_n_value.value()
+        kf = float(self.p_kf_value.toPlainText())
+        pi = float(self.p_pi_value.toPlainText())
+
+        pn = pow(kob * ns * ns * i * t / ((kt * ns + 6 * ksm * n) * kf * n), ns) * pi / ns
 
         self.p_pn_value.setText(str(pn))
 
-    def calculate_p0(self):
-        kf = float(self.p_kf_value.toPlainText())
-        n = self.p_n_value.value()
-        t = self.p_t_value.value()
-
-        p0 = pow(math.e, (-1 * kf / 1000 * n * t))
-
-        self.p_p0_value.setText(str(p0))
-
     def calculate_rt(self):
-        p0 = float(self.p_p0_value.toPlainText())
+        pi = float(self.p_pi_value.toPlainText())
 
-        rt = 1 - p0
+        rt = 1 - pi
 
         self.p_rt_value.setText(str(rt))
 
