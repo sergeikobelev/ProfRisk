@@ -135,6 +135,11 @@ class Application():
 
         self.layout.addRow(QHLine())
 
+        self.p_nn_label = QLabel('n - количество несчастных случаев')
+        self.p_nn_value = QSpinBox()
+        self.p_nn_value.setMaximum(999999)
+        self.layout.addRow(self.p_nn_label, self.p_nn_value)
+
         self.p_pn_button = QPushButton('Рассчитать P(n)')
         self.p_pn_button.clicked.connect(self.calculate_pn)
         self.layout.addRow(self.p_pn_button)
@@ -192,6 +197,7 @@ class Application():
         self.p_sd_value.setValue(20)
         self.p_ns_value.setValue(2)
         self.p_i_value.setValue(5)
+        self.p_nn_value.setValue(1)
         self.p_t_value.setValue(1)
         self.p_oz_value.setValue(3)
         self.p_pz_value.setValue(4)
@@ -253,6 +259,7 @@ class Application():
     def calculate_pn(self):
         kob = float(self.p_kob_value.toPlainText())
         ns = self.p_ns_value.value()
+        nn = self.p_nn_value.value()
         i = self.p_i_value.value()
         t = self.p_t_value.value()
         kt = float(self.p_kt_value.toPlainText())
@@ -261,7 +268,7 @@ class Application():
         kf = float(self.p_kf_value.toPlainText())
         pi = float(self.p_pi_value.toPlainText())
 
-        pn = pow(kob * ns * ns * i * t / ((kt * ns + 6 * ksm * n) * kf * n), ns) * pi / ns
+        pn = pow(kob * ns * ns * i * t / ((kt * ns + 6 * ksm * n) * kf * n), nn) * pi / nn
 
         self.p_pn_value.setText(str(pn))
 
